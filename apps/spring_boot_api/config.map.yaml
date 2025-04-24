@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: animals-json-cm
+  namespace: spring
+data:
+  test.json: |
+    {
+      "animals": {
+        "cow": "moo",
+        "sheep": "beee",
+        "pig": "oink" 
+      }
+    }

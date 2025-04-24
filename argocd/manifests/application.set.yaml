@@ -1,27 +1,27 @@
 apiVersion: argoproj.io/v1alpha1
 kind: ApplicationSet
 metadata:
-  name: example-list-applicationset
+  name: sprint-boot-api-applicationset
   namespace: argocd
 spec:
   generators:
     - list:
         elements:
           - cluster: https://kubernetes.default.svc
-            name: "Spring-Boot API dev"
+            name: "spring-boot-api"
             namespace: spring
-          - cluster: https://kubernetes.default.svc
-            name: "Spring-Boot API prod"
-            namespace: spring
+#          - cluster: https://kubernetes.default.svc
+#            name: "spring-Boot-api"
+#            namespace: spring
   template:
     metadata:
       name: '{{name}}'
     spec:
-      project: default
+      project: inpost
       source:
-        repoURL: https://github.com/your-org/your-repo.git
+        repoURL: https://github.com/SunBear1/InPostAssessment.git
         targetRevision: HEAD
-        path: apps/{{name}}
+        path: apps/spring_boot_api
       destination:
         server: '{{cluster}}'
         namespace: '{{namespace}}'

@@ -2,6 +2,8 @@
 
 helm install argocd-demo argo/argo-cd -f argocd-custom-values.yaml -n argocd --create-namespace
 
+kubectl apply -f manifests/.
+
 kubectl port-forward service/argocd-demo-server -n argocd 8080:443 & PF_PID=$!
 
 echo "Waiting for port-forward to be ready..."
