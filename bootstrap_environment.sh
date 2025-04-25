@@ -13,6 +13,7 @@ kubectl config use-context "${DEV_CLUSTER_NAME}"
 helm repo add argo https://argoproj.github.io/argo-helm
 helm repo update
 helm upgrade --install argocd argo/argo-cd --namespace argocd --values ./argocd/values.yaml --create-namespace
+helm upgrade --install inpost-argocd ./argocd --namespace argocd --values ./argocd/values.yaml
 
 printf "Waiting for Argo CD server to become ready...\n"
 kubectl rollout status deployment argocd-server -n argocd

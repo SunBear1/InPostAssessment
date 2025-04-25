@@ -1,8 +1,11 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  name: inpost
-  namespace: argocd
+  annotations:
+    "helm.sh/hook": pre-install
+    "helm.sh/hook-weight": "0"
+  name: {{ .Values.project_name }}
+  namespace: {{ .Values.namespace }}
 spec:
   description: InPost assessment project
   sourceRepos:

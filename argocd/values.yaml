@@ -1,3 +1,25 @@
+global:
+  domain: localhost
 server:
   service:
     type: NodePort
+
+project_name: inpost
+namespace: argocd
+
+repo:
+  repoURL: https://github.com/SunBear1/InPostAssessment.git
+  targetRevision: HEAD
+  path: charts/spring_boot_api
+  helm:
+    releaseName: "spring-boot-api"
+    valueFiles:
+      - "values.yaml"
+
+app_set_elements:
+  - cluster: dev-global-cluster-0
+    name: "spring-boot-api-dev"
+    namespace: spring
+  - cluster: prd-global-cluster-5
+    name: "spring-boot-api-prod"
+    namespace: spring
