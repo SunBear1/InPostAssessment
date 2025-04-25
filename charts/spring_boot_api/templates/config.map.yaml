@@ -9,6 +9,6 @@ data:
       "animals": {
         "cow": "moo",
         "sheep": "beee",
-        "pig": "oink" 
+        "pig": "oink"
       }
     }
