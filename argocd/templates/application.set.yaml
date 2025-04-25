@@ -5,19 +5,20 @@ metadata:
   namespace: {{ .Values.namespace }}
 spec:
   generators:
-    - list:
-        elements:
-          {{- toYaml .Values.app_set_elements | nindent 10 }}
+    - clusters:
+        selector:
+          matchLabels:
+            app: {{ .Values.repo.helm.releaseName }}
   template:
     metadata:
-      name: {{ printf  "'{{name}}'" }}
+      name: {{ .Values.repo.helm.releaseName }}-{{`{{metadata.labels.stage}}`}}
     spec:
       project: {{ .Values.project_name }}
       source:
         {{- toYaml .Values.repo | nindent 8 }}
       destination:
-        server: {{ printf  "'{{cluster}}'" }}
-        namespace: {{ printf "'{{namespace}}'" }}
+        server: '{{`{{server}}`}}'
+        namespace: spring
       syncPolicy:
         automated:
           prune: true

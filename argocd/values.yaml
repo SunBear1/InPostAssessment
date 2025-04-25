@@ -15,11 +15,3 @@ repo:
     releaseName: "spring-boot-api"
     valueFiles:
       - "values.yaml"
-
-app_set_elements:
-  - cluster: dev-global-cluster-0
-    name: "spring-boot-api-dev"
-    namespace: spring
-  - cluster: prd-global-cluster-5
-    name: "spring-boot-api-prod"
-    namespace: spring

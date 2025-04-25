@@ -3,10 +3,15 @@ set -e
 
 DEV_CLUSTER_NAME="dev-global-cluster-0"
 PROD_CLUSTER_NAME="prd-global-cluster-5"
+KUBECONFIG="$HOME/.kube/config"
 
 printf "[STEP 1] Start kubernetes clusters\n"
-minikube start -p "${DEV_CLUSTER_NAME}" --driver docker
-minikube start -p "${PROD_CLUSTER_NAME}"  --driver docker
+minikube start -p "${DEV_CLUSTER_NAME}" --driver docker --listen-address 0.0.0.0
+minikube start -p "${PROD_CLUSTER_NAME}"  --driver docker --listen-address 0.0.0.0
+
+yq eval ".clusters[] |= select(.name == \"${PROD_CLUSTER_NAME}\") |= .cluster.\"insecure-skip-tls-verify\" = true" -i "$KUBECONFIG"
+yq eval ".clusters[] |= select(.name == \"${PROD_CLUSTER_NAME}\") |= .cluster.server |= sub(\"127.0.0.1\", \"host.docker.internal\")" -i "$KUBECONFIG"
+yq eval "del(.clusters[] | select(.name == \"${PROD_CLUSTER_NAME}\") | .cluster.\"certificate-authority\")" -i "$KUBECONFIG"
 
 printf "\n[STEP 2] Deploying Argo CD via Helm on %s cluster\n" "${DEV_CLUSTER_NAME}"
 kubectl config use-context "${DEV_CLUSTER_NAME}"
@@ -30,8 +35,8 @@ argocd login localhost:8080 --insecure --username admin --password "${argocd_pas
 
 printf "Registering clusters to Argo CD...\n"
 kubectl config set-context --current --namespace=argocd
-argocd cluster add "${PROD_CLUSTER_NAME}" --name "${PROD_CLUSTER_NAME}" --core --yes || true
-argocd cluster set "in-cluster" --name "${DEV_CLUSTER_NAME}"
+argocd cluster add "${PROD_CLUSTER_NAME}" --name "${PROD_CLUSTER_NAME}" --label stage=prod --label app=spring-boot-api --core --yes || true
+argocd cluster set "in-cluster" --name "${DEV_CLUSTER_NAME}" --label app=spring-boot-api --label stage=dev
 
 printf "DONE\n"
 printf "Console URL %s\n" "localhost:8080"
