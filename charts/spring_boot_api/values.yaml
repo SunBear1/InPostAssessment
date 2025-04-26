@@ -61,15 +61,14 @@ spring_boot_api:
 
   config_map:
     data:
-      cm_config:
-        config.json: |
-          {
-            "animals": {
-              "cow": "moo",
-              "sheep": "beee",
-              "pig": "oink"
-            }
+      config.json: |
+        {
+          "animals": {
+            "cow": "moo",
+            "sheep": "beee",
+            "pig": "oink"
           }
+        }
 
   secret:
     data:

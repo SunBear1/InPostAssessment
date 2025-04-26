@@ -9,6 +9,7 @@ spec:
   ports:
     {{- range .Values.spring_boot_api.container.ports }}
     - port: {{ .containerPort }}
+      name: http-{{ .containerPort }}
       targetPort: {{ .containerPort }}
       protocol: TCP
     {{- end }}
