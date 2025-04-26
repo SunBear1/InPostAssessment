@@ -1,54 +1,64 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{  .Values.spring_boot_api.name }}
-  namespace: {{  .Values.spring_boot_api.namespace }}
+  name: {{ .Values.spring_boot_api.name }}
+  namespace: {{ .Values.spring_boot_api.namespace }}
+  labels:
+    app: {{ .Values.spring_boot_api.name }}
+    stage: {{ .Values.stage }}
 spec:
-  replicas: {{ .Values.spring_boot_api.replicas }}
+  replicas: {{- if eq .Values.stage "prod" }} 5
+    {{- else if eq .Values.stage "dev" }} 3
+    {{- else }} 1
+    {{- end }}
+  {{- with .Values.spring_boot_api.strategy }}
   strategy:
-    type: RollingUpdate
-    rollingUpdate:
-      maxUnavailable: 0
-      maxSurge: 1
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
   selector:
     matchLabels:
-      app: {{  .Values.spring_boot_api.name }}
+      app: {{ .Values.spring_boot_api.name }}
   template:
     metadata:
       labels:
-        app: {{  .Values.spring_boot_api.name }}
+        app: {{ .Values.spring_boot_api.name }}
+        stage: {{ .Values.stage }}
     spec:
+      {{- with .Values.spring_boot_api.volumes }}
+      volumes:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+      terminationGracePeriodSeconds: {{ .Values.spring_boot_api.terminationGracePeriodSeconds }}
       containers:
-        - name: main
-          image: busybox:stable
+        - name: {{ .Values.spring_boot_api.container.name }}
+          image: {{ .Values.spring_boot_api.container.image }}
+          imagePullPolicy: {{ .Values.spring_boot_api.container.imagePullPolicy }}
+          {{- with .Values.spring_boot_api.container.volumeMounts }}
+          volumeMounts:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           ports:
-            - containerPort: 8080
+            {{- range .Values.spring_boot_api.container.ports }}
+            - containerPort: {{ .containerPort }}
+              protocol: {{ .protocol | default "TCP" }}
+            {{- end }}
+          {{- with .Values.spring_boot_api.container.env }}
           env:
-            - name: POD_IP
-              valueFrom:
-                fieldRef:
-                  fieldPath: status.podIP
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
+          {{- with .Values.spring_boot_api.container.envFrom }}
+          envFrom:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           args:
-            - "--spring.profiles.active={{ .Values.spring_boot_api.stage }}"
+            - "--spring.profiles.active={{ .Values.stage }}"
+          {{- with .Values.spring_boot_api.container.lifecycle }}
+          lifecycle:
+            {{- toYaml . | nindent 12 }}
+          {{- end }}
           livenessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            {{- toYaml .Values.spring_boot_api.container.livenessProbe | nindent 12 }}
           readinessProbe:
-            tcpSocket:
-              port: 8080
-            initialDelaySeconds: 30
-            periodSeconds: 10
+            {{- toYaml .Values.spring_boot_api.container.readinessProbe | nindent 12 }}
           resources:
-            requests:
-              memory: "100Mi"
-              cpu: "250m"
-            limits:
-              memory: "200Mi"
-              cpu: "500m"
-      terminationGracePeriodSeconds: 30
-      lifecycle:
-        preStop:
-          exec:
-            command: ["wget", "http://localhost:8080/service/shutdown"]
+            {{- toYaml .Values.spring_boot_api.container.resources | nindent 12 }}

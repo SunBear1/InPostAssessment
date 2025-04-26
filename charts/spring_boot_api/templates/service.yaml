@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.spring_boot_api.name }}
+  namespace: {{ .Values.spring_boot_api.namespace }}
+spec:
+  selector:
+    app: {{ .Values.spring_boot_api.name }}
+  ports:
+    {{- range .Values.spring_boot_api.container.ports }}
+    - port: {{ .containerPort }}
+      targetPort: {{ .containerPort }}
+      protocol: TCP
+    {{- end }}
+  type: ClusterIP

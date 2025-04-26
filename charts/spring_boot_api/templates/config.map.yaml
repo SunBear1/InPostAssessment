@@ -3,4 +3,4 @@ kind: ConfigMap
 metadata:
   name: {{  .Values.spring_boot_api.name }}-cm
   namespace: {{  .Values.spring_boot_api.namespace }}
-data: {{- toYaml .Values.spring_boot_api.cm_config | nindent 2 }}
+data: {{- toYaml .Values.spring_boot_api.config_map.data | nindent 2 }}
