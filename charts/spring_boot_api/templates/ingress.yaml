@@ -1,0 +1,22 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: {{ .Values.spring_boot_api.name }}-ingress
+  namespace: {{ .Values.spring_boot_api.namespace }}
+spec:
+  rules:
+    - host: {{- if eq .Values.stage "dev" }} dev.inpost.com
+        {{- else if eq .Values.stage "prod" }} prd.inpost.com
+        {{- else }}  sbx.inpost.com
+        {{- end }}
+    - http:
+        paths:
+          {{- range .Values.spring_boot_api.ingress.paths }}
+            - path: {{ .path }}
+              pathType: Prefix
+              backend:
+                service:
+                  name: {{ $.Values.spring_boot_api.name }}
+                  port:
+                    number: {{ .port }}
+          {{- end }}

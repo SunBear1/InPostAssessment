@@ -15,7 +15,16 @@ spec:
     spec:
       project: {{ .Values.project_name }}
       source:
-        {{- toYaml .Values.repo | nindent 8 }}
+        repoURL: {{ .Values.repo.repoURL }}
+        targetRevision: {{ .Values.repo.targetRevision }}
+        path: {{ .Values.repo.path }}
+        helm:
+          releaseName: {{ .Values.repo.helm.releaseName }}
+          parameters:
+            - name: stage
+              value: '{{`{{metadata.labels.stage}}`}}'
+          valueFiles:
+            {{- toYaml .Values.repo.helm.valueFiles | nindent 12 }}
       destination:
         server: '{{`{{server}}`}}'
         namespace: spring
