@@ -1,9 +1,6 @@
 apiVersion: argoproj.io/v1alpha1
 kind: AppProject
 metadata:
-  annotations:
-    "helm.sh/hook": pre-install
-    "helm.sh/hook-weight": "0"
   name: {{ .Values.project_name }}
   namespace: {{ .Values.namespace }}
 spec:

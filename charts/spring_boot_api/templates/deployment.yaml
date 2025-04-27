@@ -20,6 +20,9 @@ spec:
       app: {{ .Values.spring_boot_api.name }}
   template:
     metadata:
+      annotations:
+        checksum/cm: {{ include (print $.Template.BasePath "/config.map.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secret.yaml") . | sha256sum }}
       labels:
         app: {{ .Values.spring_boot_api.name }}
         stage: {{ .Values.stage }}
