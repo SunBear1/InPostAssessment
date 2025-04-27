@@ -17,4 +17,4 @@ Following command will create:
 - Deployment of a Helm Chart to both Clusters via ApplicationSet custom resource.
 
 > [!WARNING]  
-> Currently only supported way of auto-registering 2nd minikube cluster is using Docker Desktop.
+> Currently only supported way of auto-registering 2nd minikube cluster into ArgoCD is using Docker Desktop.
